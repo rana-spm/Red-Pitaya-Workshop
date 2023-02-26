@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="./static/test-gui.css">
+  <script src="./static/test-gui.js"></script>
+  <title> Stranded in Space with Red Pitaya </title>
+</head>
+<body>
+  <form id="rx">
+    <h1> Receive </h1>
+    <div id="messages">
+      <!-- add messages here -->
+    </div>
+    <div>
+      <input type="number" min="1" max="99" value="10">
+      <button> Receive </button>
+      <div id="waiting" style="display: none;"> Waiting for message... </div>
+    </div>
+  </form>
+  <form id="tx">
+    <h1> Transmit </h1>
+    <input type="text" required>
+    <button> Transmit </button>
+  </form>
+</body>
+</html>
