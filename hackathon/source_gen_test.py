@@ -13,21 +13,21 @@ rp_s = scpi.scpi(IP)         # Establishing socket communication with Red Pitaya
 
 #### Creating arbitrary signal ##### 
 N = 16384                                       # Signal length in Samples (16384 = buffer) 
-t = np.linspace(0, 1, int(N))*2*np.pi           # Sample vector
-x = np.sin(t*8) * np.abs(np.sin(t))    # One period of custom signal
+# Input list of bits
+bits = [1, 0, 0, 1, 0]
 
-waveform_ch_10 = [] 
+# Number of times each bit should be repeated
+reps = int(np.ceil(16384 / len(bits)))
+new_bits = np.repeat(bits, reps)[:16384]
 
-for n in x:                                           # Transforming custom signal into a string (appropriate shape for SCPI commands) 
-    waveform_ch_10.append(f"{n:.5f}") 
+# Convert bits to string format
+waveform_ch_10 = []
+for n in new_bits:
+    waveform_ch_10.append(f"{n:.5f}")
 waveform = ", ".join(map(str, waveform_ch_10))
 
-freq = 100000
+freq = 57600  # Set frequency to 57.6kHz
 ampl = 1
-
-ncyc = 1
-nor = 65536
-period = 20
 
 rp_s.tx_txt('GEN:RST')                                # Reset generator
 rp_s.tx_txt('SOUR1:FUNC ARBITRARY')                   # Signal shape
@@ -36,11 +36,7 @@ rp_s.tx_txt('SOUR1:TRAC:DATA:DATA ' + waveform)       # Sending custom signal da
 rp_s.tx_txt('SOUR1:FREQ:FIX ' + str(freq))            # Frequency
 rp_s.tx_txt('SOUR1:VOLT ' + str(ampl))                # Amplitude
 
-rp_s.tx_txt('SOUR1:BURS:STAT BURST')                  # Enable burst mode
-rp_s.tx_txt('SOUR1:BURS:NCYC ' + str(ncyc))           # Number of periods in a burst
-rp_s.tx_txt('SOUR1:BURS:NOR ' + str(nor))             # Number of repeated bursts
-rp_s.tx_txt('SOUR1:BURS:INT:PER ' + str(period))      # Duration of a single burst (includes signal and delay)
-
 rp_s.tx_txt('SOUR1:TRIG:SOUR INT')                    # Trigger Source internal
 rp_s.tx_txt('OUTPUT1:STATE ON')                       # Output 1 turned ON
 rp_s.tx_txt('SOUR1:TRIG:INT')
+

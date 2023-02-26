@@ -5,8 +5,6 @@ from fastapi.staticfiles import StaticFiles  # Used for serving static files
 import uvicorn                               # Used for running the app
 
 # Import buffer.py
-import sys
-sys.path.append('../buffer.py')
 import buffer
 
 # Configuration
@@ -28,8 +26,12 @@ def get_gui_html() -> HTMLResponse:
 
 # Get the specified number of buffers worth of message
 @app.get("/rx/{num_buffers}")
-def get_rx(num_buffers) -> str:
-    return buffer.receive(num_buffers)
+def get_rx(num_buffers: int) -> dict:
+    response = buffer.receive(num_buffers)
+    if response:
+        return {'response': response}
+    else:
+        return {'error': 'error'}
 
 # Transmit the given message though IR in Morse code
 @app.post("/tx")
