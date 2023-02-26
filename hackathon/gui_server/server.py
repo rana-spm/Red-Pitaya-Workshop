@@ -4,6 +4,11 @@ from fastapi.responses import HTMLResponse   # Used for returning HTML responses
 from fastapi.staticfiles import StaticFiles  # Used for serving static files
 import uvicorn                               # Used for running the app
 
+# Import buffer.py
+import sys
+sys.path.append('../buffer.py')
+import buffer
+
 # Configuration
 app = FastAPI() # Specify the "app" that will run the routing
 # Mount the static directory
@@ -24,15 +29,13 @@ def get_gui_html() -> HTMLResponse:
 # Get the specified number of buffers worth of message
 @app.get("/rx/{num_buffers}")
 def get_rx(num_buffers) -> str:
-    # Simulate waiting for message
-    import time
-    time.sleep(1)
-    return f"Received {num_buffers} buffers worth of message!"
+    return buffer.receive(num_buffers)
 
 # Transmit the given message though IR in Morse code
 @app.post("/tx")
 def post_tx(message: str = Body(...)):
     print(message)
+    buffer.transmit(message)
 
 # Host the server when run
 if __name__ == "__main__":
