@@ -18,7 +18,7 @@ body {
   background: #35363a;
   color: white;
   font-family: 'IBM Plex Mono', monospace;
-  box-shadow: 1rem  1rem 1rem #1a1a1a;
+  box-shadow: 1rem 1rem 1rem #1a1a1a;
 }
 
 h1 {
@@ -30,7 +30,7 @@ main, input {
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
   background: #58595a;
-  box-shadow: 0.5rem  0.5rem 0.5rem #2e2e2e;
+  box-shadow: 0.5rem 0.5rem 0.5rem #2e2e2e;
 }
 
 main {
@@ -40,7 +40,7 @@ main {
   gap: 0.5rem;
 }
 
-.self-message {
+.rx-message {
   color: hsl(0deg 100% 60%);
 }
 

@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Request message from server
     const message = await rx();
     // Add message to chat log
-    addMessage(message);
+    addMessage(message, true);
   }
 
   async function tx(message) {
@@ -26,9 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
     getMessage();
   }
 
-  function addMessage(message, self = false) {
+  function addMessage(message, rx = false) {
     const newMessage = document.createElement('div');
-    if (self) newMessage.className = 'self-message';
+    if (rx) newMessage.className = 'rx-message';
     const time = (new Date()).toLocaleTimeString([], {hour12: false});
     newMessage.textContent = `[${time}] ${message}`;
     messages.appendChild(newMessage);
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Transmit message to server
       await tx(message);
       // Add message to chat log
-      addMessage(message, true);
+      addMessage(message);
       // Clear text input
       form.reset();
     }
