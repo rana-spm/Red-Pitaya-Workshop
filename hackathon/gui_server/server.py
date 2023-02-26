@@ -10,6 +10,12 @@ app = FastAPI() # Specify the "app" that will run the routing
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Return a static HTML page
+@app.get("/test", response_class=HTMLResponse)
+def get_test_gui_html() -> HTMLResponse:
+    with open("test-gui.html") as html:
+        return HTMLResponse(content=html.read())
+
+# Return a static HTML page
 @app.get("/", response_class=HTMLResponse)
 def get_gui_html() -> HTMLResponse:
     with open("gui.html") as html:
