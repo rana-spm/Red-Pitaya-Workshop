@@ -41,15 +41,11 @@ input {
 }
 
 input::placeholder {
-  color: hsl(0deg 0% 60%); 
+  color: hsl(0deg 0% 100% / 50%);
 }
 
 input:focus {
   background: hsl(0deg 60% 40%);
-}
-
-input:focus::placeholder {
-  color: hsl(0deg 60% 70%);
 }
 
 main {
