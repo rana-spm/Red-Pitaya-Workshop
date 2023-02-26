@@ -16,14 +16,13 @@ def get_gui_html() -> HTMLResponse:
         return HTMLResponse(content=html.read())
 
 # Get the specified number of buffers worth of data
-@app.get("/receive/{num_buffers}")
-def get_receive(num_buffers) -> str:
-    print(f"Requested {num_buffers} buffers worth of data!")
-    return ""
+@app.get("/rx/{num_buffers}")
+def get_rx(num_buffers) -> str:
+    return f"Received {num_buffers} buffers worth of message!"
 
 # Transmit the given message though IR in Morse code
-@app.post("/transmit")
-def post_transmit(message: str = Body(...)):
+@app.post("/tx")
+def post_tx(message: str = Body(...)):
     print(message)
 
 # Host the server when run

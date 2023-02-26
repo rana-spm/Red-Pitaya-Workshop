@@ -6,8 +6,18 @@
   <title> Stranded in Space with Red Pitaya </title>
 </head>
 <body>
-  <h1> Receive </h1>
-  
-  <h1> Transmit </h1>
+  <form id="rx">
+    <h1> Receive </h1>
+    <div id="text"> Have not yet received any message! </div>
+    <div>
+      <input type="number" min="1" max="99" value="1">
+      <button> Receive </button>
+    </div>
+  </form>
+  <form id="tx">
+    <h1> Transmit </h1>
+    <input type="text" required>
+    <button> Transmit </button>
+  </form>
 </body>
 </html>
