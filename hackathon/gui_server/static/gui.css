@@ -51,6 +51,10 @@ form {
   min-height: 1rem;
 }
 
+.tx-message {
+  color:hsl(0deg 100% 60%);
+}
+
 #rx div {
   display: flex;
   align-items: center;
@@ -58,7 +62,7 @@ form {
 }
 
 #rx input {
-  width: 2rem;
+  width: 2.5rem;
 }
 
 #tx {
