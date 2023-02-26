@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('form');
   const input = document.querySelector('input');
 
-  const numBuffers = 2;
+  const numBuffers = 4;
   async function rx() {
     return await (await fetch(`/rx/${numBuffers}`)).json();
   }
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const message = await rx();
     if ('response' in message) {
       // Add message to chat log
-      addMessage(message, true);
+      addMessage(message['response'], true);
     }
     getMessage();
   }

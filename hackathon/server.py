@@ -27,10 +27,10 @@ def get_gui_html() -> HTMLResponse:
 # Get the specified number of buffers worth of message
 @app.get("/rx/{num_buffers}")
 def get_rx(num_buffers: int) -> dict:
-    response = buffer.receive(num_buffers)
-    if response:
+    try:
+        response = buffer.receive(num_buffers)
         return {'response': response}
-    else:
+    except:
         return {'error': 'error'}
 
 # Transmit the given message though IR in Morse code

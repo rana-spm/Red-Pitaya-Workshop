@@ -14,7 +14,7 @@ state = ''
 
 ##### Acquisition ######
 BUFF_SIZE = 16384
-TRIG_DLY = 8000 #BUFF_SIZE/2
+TRIG_DLY = BUFF_SIZE/2
 DEC = pow(2, 7)
 
 def receive(n):
@@ -25,7 +25,8 @@ def receive(n):
     buff = np.zeros((n, BUFF_SIZE))
     buff_strings = ['']*n #np.empty([n], dtype=str)
 
-    time.sleep(0.01)
+    time.sleep(0.2)
+    
     rp_s.tx_txt('ACQ:RST')                      # Reset acquisition parameters
     rp_s.tx_txt('ACQ:SOUR2:GAIN HV')
     rp_s.tx_txt('ACQ:DATA:FORMAT ASCII')        # Format of the data (ASCII or BIN)
@@ -36,7 +37,7 @@ def receive(n):
 
     for i in range(0,n):
         rp_s.tx_txt('ACQ:START')                    # Start acquiring data
-        time.sleep(0.0034)
+        time.sleep(0.134)
         rp_s.tx_txt('ACQ:TRIG CH2_NE')              # Set the trigger
 
         while 1:                              # Wait until the trigger condition is met
@@ -54,16 +55,36 @@ def receive(n):
         buff_string = buff_strings[i].strip('{}\n\r').replace("  ", "").split(',')
         buff[i, :] = list(map(float, buff_string))
     # Print buffers
-    print(buff)
+    if False:
+        cmt = 0
+        for sample in buff[0]:
+            if cmt < 700:
+                print(sample)
+            else:
+                break
+            cmt += 1
+        print(buff)
+    if False:
+        ######## PLOTTING THE DATA #########
+        fig, axs = plt.subplots(n, sharex = True)   # plot the data (n subplots)
+        fig.suptitle("Measurements")
+
+        for i in range(0,n,1):                      # plotting the acquired buffers
+            axs[i].plot(buff[i])
+
+        # Plotting the received data
+        plt.plot(buff)
+        plt.ylabel('Voltage')
+        plt.show()
 
     # Convert signal to bits
     output = []
-    COUNTER_THRESH = 155 # Number of samples per Morse unit
+    COUNTER_THRESH = round((2170 / 7) / 2) # Number of samples per Morse unit
     for i in range(0, n):
         high_val = max(buff[i])
         low_val = min(buff[i])
-        print(f"{i}: {high_val=}")
-        print(f"{i}: {low_val=}")
+        #print(f"{i}: {high_val=}")
+        #print(f"{i}: {low_val=}")
         state = 1 # Start in state 1
         counter = 0 # Reset counter
         output.append(1) # Add first one
@@ -78,6 +99,7 @@ def receive(n):
                 elif state == 1: # State changed
                     output.append(0) # Append bit
                     state = 0 # Update state
+                    counter = 0 # Reset counter
             elif val < low_val + high_val * 0.2: # if below 1 threshhold
                 if state == 1: # Same state
                     if counter > COUNTER_THRESH: # Has been in same state for long enough
@@ -86,11 +108,12 @@ def receive(n):
                 elif state == 0: # State changed
                     output.append(1) # Append bit
                     state = 1 # Update state
+                    counter = 0 # Reset counter
             # Increment number of samples since last bit
             counter += 1
     # Print bits
-    print(output)
-    print(f"Length: {len(output)}")
+    #print(output)
+    #print(f"Length: {len(output)}")
 
     # Dict from morse string to letter
     receiveDict = {
@@ -130,23 +153,36 @@ def receive(n):
         "--..." : "7",
         "---.." : "8",
         "----." : "9",
-        "-----" : "0"
+        "-----" : "0",
+        ".-.-.-" : '.',
+        "--..--" : ',',
+        '..--..' : '?',
+        '.----.' : "'",
+        '-.-.--' : '!',
+        '---...' : ':'
+        
     }
     # Decode bits into message
     decoded_morse = []
     o_string = "".join(map(str, output))
-    words = o_string.split('0000000')
+    words = o_string.split('00000')
     for word in words:
+        if word == '':
+            continue
         letters = word.split('000')
         for letter in letters:
+            if letter == '':
+                continue
             # Convert letter to morse string
             morse_string = ''
             dots_and_dashes = letter.split('0')
             for dot_or_dash in dots_and_dashes:
                 if dot_or_dash == '1':
                     morse_string += '.'
-                elif dot_or_dash == '111':
+                elif dot_or_dash == '111' or dot_or_dash == '11':
                     morse_string += '-'
+                elif dot_or_dash == '':
+                    morse_string += ''
                 else:
                     morse_string += 'X'
             # Decode letter from morse_string
@@ -251,6 +287,8 @@ def transmit(message):
             waveform.append(f'{bit:.5f}')
         waveform_str = ', '.join(map(str, waveform))
         
+        time.sleep(0.2)
+        
         rp_s.tx_txt('GEN:RST')                                # Reset generator
         rp_s.tx_txt('SOUR1:FUNC ARBITRARY')                   # Signal shape
         rp_s.tx_txt('SOUR1:TRAC:DATA:DATA ' + waveform_str)       # Sending custom signal data
@@ -261,22 +299,6 @@ def transmit(message):
         rp_s.tx_txt('SOUR1:TRIG:SOUR INT')                    # Trigger Source internal
         rp_s.tx_txt('OUTPUT1:STATE ON')                       # Output 1 turned ON
         rp_s.tx_txt('SOUR1:TRIG:INT')
-
-
-if False:
-    ######## PLOTTING THE DATA #########
-    fig, axs = plt.subplots(n, sharex = True)   # plot the data (n subplots)
-    fig.suptitle("Measurements")
-
-    for i in range(0,n,1):                      # plotting the acquired buffers
-        axs[i].plot(buff[i])
-
-    # Plotting the received data
-    plt.plot(buff)
-    plt.ylabel('Voltage')
-    plt.show()
-
-    time.sleep(10)
 
 # If running buffer.py from command line:
 if __name__ == "__main__":
