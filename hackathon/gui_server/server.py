@@ -15,9 +15,12 @@ def get_gui_html() -> HTMLResponse:
     with open("gui.html") as html:
         return HTMLResponse(content=html.read())
 
-# Get the specified number of buffers worth of data
+# Get the specified number of buffers worth of message
 @app.get("/rx/{num_buffers}")
 def get_rx(num_buffers) -> str:
+    # Simulate waiting for message
+    import time
+    time.sleep(1)
     return f"Received {num_buffers} buffers worth of message!"
 
 # Transmit the given message though IR in Morse code
