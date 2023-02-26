@@ -1,23 +1,29 @@
 document.addEventListener('DOMContentLoaded', () => {
-    rxForm = document.querySelector('#rx');
-    txForm = document.querySelector('#tx');
+    const rxForm = document.querySelector('#rx');
+    const txForm = document.querySelector('#tx');
 
-    rxText = document.querySelector('#rx #text');
-    rxWaiting = document.querySelector('#rx #waiting');
+    const rxMessages = document.querySelector('#rx #messages');
+    const rxWaiting = document.querySelector('#rx #waiting');
 
     rxForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-        numBuffers = rxForm.querySelector('input').value;
-        rxWaiting.style = ''; // Hide waiting text
-        message = await (await fetch(`/rx/${numBuffers}`)).json();
-        rxWaiting.style.display = 'none'; // Show waiting text
-        rxText.textContent = message;
+        rxWaiting.style = ''; // Show waiting text
+        // Request message from server
+        const numBuffers = rxForm.querySelector('input').value;
+        const message = await (await fetch(`/rx/${numBuffers}`)).json();
+        rxWaiting.style.display = 'none'; // Hide waiting text
+        // Add message to chat log
+        const newMessage = document.createElement('div');
+        newMessage.className = 'message';
+        const time = (new Date()).toLocaleTimeString([], {hour12: false});
+        newMessage.textContent = time + ': ' + message;
+        rxMessages.appendChild(newMessage);
         rxForm.reset();
     });
 
     txForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-        message = txForm.querySelector('input').value;
+        const message = txForm.querySelector('input').value;
         fetch('/tx', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},

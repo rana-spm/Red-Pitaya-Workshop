@@ -8,6 +8,7 @@ body {
   background: hsl(0deg 0% 13%);
   color: white;
   font-family: 'IBM Plex Mono', monospace;
+  font-size: 1rem;
 }
 
 h1 {
@@ -41,10 +42,13 @@ form {
   gap: 1rem;
 }
 
-#rx #text {
+#rx #messages {
+  flex-flow: column;
+  align-items: flex-start;
   background: hsl(0deg 0% 31%);
   padding: 0.5rem;
   border-radius: 0.25rem;
+  min-height: 1rem;
 }
 
 #rx div {
